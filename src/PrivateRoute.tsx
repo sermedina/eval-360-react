@@ -8,15 +8,15 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRole }) => {
-  const { token, role } = useAuth();
+  const { user } = useAuth();
 
   // Si no hay token, redirigir al login
-  if (!token) {
+  if (!user?.token) {
     return <Navigate to="/login" />;
   }
 
   // Si la ruta requiere un rol específico y el usuario no lo tiene, redirigir al dashboard
-  if (requiredRole && role !== requiredRole) {
+  if (requiredRole && user.role !== requiredRole) {
     return <Navigate to="/" />;
   }
 

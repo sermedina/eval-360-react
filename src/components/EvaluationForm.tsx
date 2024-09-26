@@ -69,7 +69,8 @@ const EvaluationForm = () => {
 
 
     const answers: Response = {};
-    const author = localStorage.getItem('name') || 'none';
+    const author = localStorage.getItem('name') || '';
+    const evaluationName = evaluation?.title;
 
     evaluation?.questions.forEach((question) => {
       const label = question.label; // Obtener el label de la pregunta
@@ -87,7 +88,7 @@ const EvaluationForm = () => {
           'Content-Type': 'application/json',
           'X-Master-Key': API_KEY,
         },
-        body: JSON.stringify({ author,answers }),
+        body: JSON.stringify({evaluationName, author,answers }),
       });
       if (response.ok) {
         alert('Respuestas guardadas con éxito');

@@ -32,7 +32,7 @@ interface Question {
 
 
 const Evaluations = () => {
-  const { role } = useAuth();
+  const { user } = useAuth();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [newEvaluation, setNewEvaluation] = useState<Evaluation>({
@@ -217,7 +217,7 @@ const Evaluations = () => {
         </div>
       )}
 
-      {role === 'admin' && !isCreating && (
+      {user?.role === 'admin' && !isCreating && (
         <Button onClick={handleCreateEvaluation} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
           Crear Nueva Evaluación
         </Button>

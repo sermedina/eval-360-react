@@ -5,11 +5,17 @@ import { API_KEY } from '../config/config.ts';
 import { API_EMPLOYEE_URL } from '../config/config.ts';
 
 interface AuthContextProps {
-  token: string | null;
-  role: string | null;
-  name: string | null;
+  user: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+}
+
+interface User {
+  token: string;
+  role: string;
+  name: string;
+  email: string;
+  position: string;
 }
 
 interface Employee {
@@ -24,7 +30,7 @@ interface Employee {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
@@ -32,17 +38,13 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
-  const [name, setName] = useState<string | null>(localStorage.getItem('name'));
+  const [user, setUser] = useState<User | null>(
+    localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
+  );
 
-  const secret = new TextEncoder().encode('mi-secreto'); 
-
-
+  const secret = new TextEncoder().encode('mi-secreto');
 
   const login = async (username: string, password: string) => {
-
-
     // Buscamos al usuario en la base de datos mockup
     const response = await fetch(API_EMPLOYEE_URL, {
       headers: {
@@ -68,36 +70,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Generamos el JWT
     const payload = {
-      sub: String(foundUser.id), 
-      name: foundUser.username,
-      role: foundUser.role,
+      sub: String(foundUser.id),
+      name: foundUser.name,
+      role: foundUser.position, // Aquí asumimos que el cargo es el rol
       iat: Math.floor(Date.now() / 1000), // Timestamp actual
       exp: Math.floor(Date.now() / 1000) + 60 * 60, // Expira en 1 hora
     };
 
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: 'HS256' })
-      .sign(secret); // Firmamos el JWT
+      .sign(secret);
 
-    // Guardamos el token y rol en localStorage
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', foundUser.role);
-    localStorage.setItem('name', foundUser.name);
-    setToken(token);
-    setRole(foundUser.role);
-    setName(foundUser.name);
+    // Creamos el objeto de usuario con toda la información relevante
+    const userData: User = {
+      token,
+      role: foundUser.role,
+      name: foundUser.name,
+      email: foundUser.email,
+      position: foundUser.position,
+    };
+
+    // Guardamos el objeto usuario en localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    setToken(null);
-    setRole(null);
-    setName(null);
+    localStorage.removeItem('user');
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, role, name, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

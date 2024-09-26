@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 
 const Header = () => {
-  const { role, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <aside className="w-64 bg-blue-700 text-white h-screen p-4 shadow-lg">
@@ -13,17 +13,17 @@ const Header = () => {
           <li>
             <Link to='/' className="hover:text-blue-300 transition">Dashboard</Link>
           </li>
-          {role && (
+          {user?.role === 'employee' && (
             <li>
               <Link to="/profile" className="hover:text-blue-300 transition">Perfil</Link>
             </li>
           )}
-          {role === 'employee' && (
+          {user?.role === 'employee' && (
             <li>
               <Link to='/evaluation' className="hover:text-blue-300 transition">Evaluación</Link>
             </li>
           )}
-          {role === 'admin' && (
+          {user?.role === 'admin' && (
             <>
               <li>
                 <Link to="/employees" className="hover:text-blue-300 transition">Empleados</Link>
