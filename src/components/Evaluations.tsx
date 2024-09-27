@@ -16,19 +16,19 @@ import Alert from './Alert';
 import { API_KEY } from '../config/config.ts';
 import { API_EVALUATION_URL } from '../config/config.ts';
 
-interface Evaluation {
-  id: number;
-  title: string;
-  questions: Question[];
-  isCurrent: boolean;
-}
-
 interface Question {
   id: number;
   type: string;
   label: string;
   options?: string[];
 }
+
+export interface Evaluation {
+  id: number;
+  title: string;
+  isCurrent: boolean;
+  questions: Question[];
+};
 
 
 const Evaluations = () => {
@@ -57,7 +57,6 @@ const Evaluations = () => {
           },
         });
         const data = await response.json();
-        console.log(data);
         setEvaluations(data.record);
       } catch (err) {
         console.error('Error fetching evaluations:', err);

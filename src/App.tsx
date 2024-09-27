@@ -9,6 +9,8 @@ import Header from './components/Header'
 import { useAuth } from './contexts/AuthContext'
 import Evaluations from './components/Evaluations'
 import EvaluationForm from './components/EvaluationForm'
+import PendingEvaluations from './components/PendingEvaluations'
+import EvaluationDetail from './components/EvaluationDetail'
 
 function App() {
   const { user } = useAuth(); 
@@ -32,6 +34,8 @@ function App() {
         <Route path="/employees" element={<PrivateRoute requiredRole="admin"><Employees /></PrivateRoute>} />
         <Route path="/evaluations" element={<PrivateRoute requiredRole="admin"><Evaluations /></PrivateRoute>} />
         <Route path="/evaluation" element={<PrivateRoute requiredRole="employee"><EvaluationForm /></PrivateRoute>} />
+        <Route path="/" element={<PendingEvaluations />} />
+        <Route path="/evaluations/:id" element={<EvaluationDetail />} />
       </Routes>
     </main>
   </div>

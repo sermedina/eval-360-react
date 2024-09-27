@@ -3,29 +3,9 @@ import { SignJWT } from 'jose'; // Importamos SignJWT y jwtVerify
 import crypto from 'crypto-js';
 import { API_KEY } from '../config/config.ts';
 import { API_EMPLOYEE_URL } from '../config/config.ts';
+import { AuthContextProps, Employee, User } from '../types.ts';
 
-interface AuthContextProps {
-  user: User | null;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
-}
 
-interface User {
-  token: string;
-  role: string;
-  name: string;
-  email: string;
-  position: string;
-}
-
-interface Employee {
-  id: number;
-  name: string;
-  email: string;
-  position: string;
-  username: string;
-  password: string;
-}
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 

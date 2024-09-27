@@ -3,16 +3,8 @@ import { Card, Button, Table, TableHead, TableBody, TableRow, TableCell, TextInp
 import crypto from 'crypto-js';
 import { API_KEY } from '../config/config.ts';
 import { API_EMPLOYEE_URL } from '../config/config.ts';
+import { Employee } from '../types.ts';
 
-interface Employee {
-    id: number;
-    name: string;
-    email: string;
-    position: string;
-    username: string;
-    password: string;
-    role: 'admin' | 'employee';
-}
 
 
 const Employees: React.FC = () => {
@@ -36,7 +28,6 @@ const Employees: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log(data);
             setEmployees(data.record || []);
         } catch (error) {
             console.error('Error fetching employees:', error);

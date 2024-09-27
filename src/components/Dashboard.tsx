@@ -1,112 +1,146 @@
-import { useState, useEffect } from 'react';
-import { API_ANSWER_URL } from '../config/config.ts';
-import ChartComponent from './ChartComponent.tsx';
-import { API_KEY } from '../config/config.ts';
+import { useEffect, useState } from 'react';
+import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { API_KEY, API_ANSWER_URL } from '../config/config';
+import PendingEvaluations from './PendingEvaluations';
 
-
-type Response = {
+interface EvaluationResponse {
     author: string;
+    evaluationName: string;
     answers: {
-        [key: string]: string;
+        [key: string]: string | number;
     };
-};
-
-
+}
 
 const Dashboard = () => {
-    const [responses, setResponses] = useState<Response[]>([]);
-    const [error, setError] = useState('');
+    const [data, setData] = useState<EvaluationResponse[]>([]);
 
     useEffect(() => {
-        fetchResponses();
-    }, []);
-
-    const fetchResponses = async () => {
-        try {
+        // Fetch evaluations from jsonbin.io
+        const fetchEvaluations = async () => {
             const response = await fetch(API_ANSWER_URL, {
                 headers: {
-                    'X-Master-Key': API_KEY,
-                },
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                }
             });
-            const data = await response.json();
-            console.log(data);
-            setResponses(data.record);
-        } catch {
-            setError('Error al cargar respuestas');
-        }
-    };
 
-    const processDataForCharts = () => {
-        const delegationData = { si: 0, no: 0 };
-        const decisionData = { si: 0, no: 0 };
-        const helpData = { si: 0, no: 0 };
-        const leadershipData: number[] = [];
-
-        responses.forEach((resp: Response) => {
-            const answers = resp.answers;
-            if (answers["¿Confía y delega responsabilidades en su equipo?"] === 'si') delegationData.si += 1;
-            else delegationData.no += 1;
-
-            if (answers["¿Es capaz de tomar decisiones difíciles y responsabilizarse de los resultados?"] === 'si') decisionData.si += 1;
-            else decisionData.no += 1;
-
-            if (answers["¿Otros miembros del equipo lo buscan para que los ayude con su trabajo?"] === 'si') helpData.si += 1;
-            else helpData.no += 1;
-
-            if (answers["¿Cómo calificaría su capacidad de liderazgo?"]) {
-                leadershipData.push(Number(answers["¿Cómo calificaría su capacidad de liderazgo?"]));
+            if (!response.ok) {
+                throw new Error('Error fetching evaluations');
             }
-        });
 
-        return { delegationData, decisionData, helpData, leadershipData };
+            const json = await response.json();
+            setData(json.record);
+        };
+
+        fetchEvaluations();
+    }, []);
+
+    // Agrupamos y preparamos datos para gráficos
+    const groupByAnswer = (question: string) => {
+        return data.reduce(
+            (acc, curr) => {
+                const answer = curr.answers[question];
+                if (answer === 'si') acc.yes += 1;
+                if (answer === 'no') acc.no += 1;
+                return acc;
+            },
+            { yes: 0, no: 0 }
+        );
     };
 
-    const { delegationData, decisionData, helpData, leadershipData } = processDataForCharts();
+    // Agrupar por 'author' y calcular el promedio de 'leadership' por autor
+    const leadershipScoresMap = new Map();
+
+    data.forEach((d) => {
+        const author = d.author;
+        const leadership = d.answers['¿Cómo calificaría su capacidad de liderazgo?'];
 
 
+        if (typeof leadership === 'number' && !isNaN(leadership)) {
+            if (leadershipScoresMap.has(author)) {
+                const existingEntry = leadershipScoresMap.get(author);
+                leadershipScoresMap.set(author, {
+                    ...existingEntry,
+                    totalLeadership: existingEntry.totalLeadership + leadership,
+                    count: existingEntry.count + 1,
+                });
+            } else {
+                leadershipScoresMap.set(author, {
+                    author: author,
+                    totalLeadership: leadership,
+                    count: 1,
+                });
+            }
+        }
+    });
 
-    if (error) return <p>{error}</p>;
+    // Crear un array de objetos con el promedio de 'leadership' por autor
+    const leadershipScores = Array.from(leadershipScoresMap.values()).map((entry) => ({
+        author: entry.author,
+        leadership: entry.count > 0 ? (entry.totalLeadership / entry.count) : 0, // Promedio de liderazgo
+    }));
+    const delegationData = groupByAnswer('¿Confía y delega responsabilidades en su equipo?');
+    const decisionMakingData = groupByAnswer('¿Es capaz de tomar decisiones difíciles y responsabilizarse de los resultados?');
 
     return (
         <div>
-            <h2 className="text-3xl font-bold text-gray-800 mt-6 mb-4">
-                Dashboard
-            </h2>
+            <h2>Dashboard de Evaluaciones</h2>
 
-            {/* Gráfico sobre confianza y delegación */}
-            <div className="chart-container">
-                <h3>¿Confía y delega responsabilidades en su equipo?</h3>
-                <ChartComponent
-                    data={[delegationData.si, delegationData.no]}
-                    labels={['Sí', 'No']}
-                />
+            {/* Gráfico de barras para capacidad de liderazgo */}
+            <div style={{ width: '100%', height: 300 }}>
+                <h3>Capacidad de Liderazgo</h3>
+                <ResponsiveContainer>
+                    <BarChart data={leadershipScores}>
+                        <XAxis dataKey="author" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="leadership" fill="#8884d8" />
+                    </BarChart>
+                </ResponsiveContainer>
             </div>
 
-            {/* Gráfico sobre toma de decisiones */}
-            <div className="chart-container">
-                <h3>¿Es capaz de tomar decisiones difíciles y responsabilizarse de los resultados?</h3>
-                <ChartComponent
-                    data={[decisionData.si, decisionData.no]}
-                    labels={['Sí', 'No']}
-                />
+            {/* Gráfico de torta para delegación de responsabilidades */}
+            <div style={{ width: '100%', height: 300 }}>
+                <h3>Delegación de Responsabilidades</h3>
+                <ResponsiveContainer>
+                    <PieChart>
+                        <Pie
+                            dataKey="value"
+                            data={[
+                                { name: 'Sí', value: delegationData.yes },
+                                { name: 'No', value: delegationData.no }
+                            ]}
+                            fill="#82ca9d"
+                            label
+                        />
+                        <Tooltip />
+                    </PieChart>
+                </ResponsiveContainer>
             </div>
 
-            {/* Gráfico sobre ayuda a otros miembros del equipo */}
-            <div className="chart-container">
-                <h3>¿Otros miembros del equipo lo buscan para que los ayude con su trabajo?</h3>
-                <ChartComponent
-                    data={[helpData.si, helpData.no]}
-                    labels={['Sí', 'No']}
-                />
+            {/* Gráfico de torta para toma de decisiones difíciles */}
+            <div style={{ width: '100%', height: 300 }}>
+                <h3>Toma de Decisiones Difíciles</h3>
+                <ResponsiveContainer>
+                    <PieChart>
+                        <Pie
+                            dataKey="value"
+                            data={[
+                                { name: 'Sí', value: decisionMakingData.yes },
+                                { name: 'No', value: decisionMakingData.no }
+                            ]}
+                            fill="#ffc658"
+                            label
+                        />
+                        <Tooltip />
+                    </PieChart>
+                </ResponsiveContainer>
             </div>
 
-            {/* Gráfico sobre desempeño (puede ser una escala o texto interpretado como numérico) */}
-            <div className="chart-container">
-                <h3>¿Cómo definiria su desempeño?</h3>
-                <ChartComponent
-                    data={leadershipData}
-                    labels={['1 - Muy malo', '2 - Malo', '3 - Regular', '4 - Bueno', '5 - Excelente']}
-                />
+            <div className="fixed bottom-4 right-4 w-1/4">
+                <h2 className="text-xl font-semibold mb-2">Evaluaciones Pendientes</h2>
+                <PendingEvaluations />
             </div>
         </div>
     );

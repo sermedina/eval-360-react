@@ -4,11 +4,7 @@ import { Card, Title, Text } from '@tremor/react';
 import { API_KEY } from '../config/config.ts';
 import { API_ANSWER_URL } from '../config/config.ts';
 
-
-type Response = {
-    [key: string]: string; // Clave es string (label) y valor es string (respuesta)
-};
-
+import { Response } from "../types.ts";
 
 const Profile = () => {
     const { user } = useAuth(); // Obtén el nombre, email y cargo

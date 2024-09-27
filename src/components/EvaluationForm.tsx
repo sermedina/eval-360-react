@@ -12,7 +12,7 @@ type Question = {
 };
 
 type Evaluation = {
-  id: string;
+  id: number;
   title: string;
   isCurrent: boolean;
   questions: Question[];
@@ -26,7 +26,7 @@ const EvaluationForm = () => {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [responses, setResponses] = useState<Response>({});
   const [loading, setLoading] = useState(true);
- 
+
 
   // Obtener la evaluación actual
   useEffect(() => {
@@ -66,10 +66,12 @@ const EvaluationForm = () => {
       return;
     }
 
-
-
     const answers: Response = {};
-    const author = localStorage.getItem('name') || '';
+    const user = localStorage.getItem('user') || '';
+
+    const userObject = JSON.parse(user);
+
+    const author = userObject.name;
     const evaluationName = evaluation?.title;
 
     evaluation?.questions.forEach((question) => {
@@ -80,15 +82,31 @@ const EvaluationForm = () => {
         answers[label] = value; // Asignar el valor al label solo si existe
       }
     });
+    const newResponse = {
+      author: author, // Usar el nombre del usuario logueado
+      evaluationName: evaluationName,
+      answers,
+    };
 
     try {
+
+      const binResponse = await fetch(API_ANSWER_URL, {
+        headers: {
+          "X-Master-Key": API_KEY,
+        },
+      });
+      const binData = await binResponse.json();
+
+      // Combina las respuestas existentes con la nueva respuesta
+      const newAnswers = [...binData.record, newResponse];
+
       const response = await fetch(API_ANSWER_URL, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'X-Master-Key': API_KEY,
         },
-        body: JSON.stringify({evaluationName, author,answers }),
+        body: JSON.stringify(newAnswers),
       });
       if (response.ok) {
         alert('Respuestas guardadas con éxito');
@@ -108,62 +126,62 @@ const EvaluationForm = () => {
 
   return (
     <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
-    <Card className="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
-      <Title className="text-2xl font-bold mb-4">{evaluation.title}</Title>
-      <form onSubmit={handleSubmit}>
-        {evaluation.questions.map((q) => (
-          <div key={q.id} className="mb-6">
-            <Text className="font-semibold mb-2">{q.label}</Text>
-            {q.type === 'text' && (
-              <TextInput
-                className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
-                value={responses[q.id] || ''}
-                onChange={(e) => handleResponseChange(q.id, e.target.value)}
-                placeholder="Ingresa tu respuesta"
-                required
-              />
-            )}
-            {q.type === 'scale' && (
-              <TextInput
-                type="number"
-                min="1"
-                max="10"
-                className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
-                value={responses[q.id] || ''}
-                onChange={(e) => handleResponseChange(q.id, e.target.value)}
-                placeholder="Escoge un número del 1 al 10"
-                required
-              />
-            )}
-            {q.type === 'multiple-choice' && (
-              <select
-              id={q.id}
-              value={responses[q.id] || ''}
-              onChange={(e) => handleResponseChange(q.id, e.target.value)}
-              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
-              required
-            >
-              <option value="" disabled>Selecciona una opción</option>
-              {q.options?.map((option, index) => (
-                <option key={`${q.id}-option-${index}`} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            )}
+      <Card className="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
+        <Title className="text-2xl font-bold mb-4">{evaluation.title}</Title>
+        <form onSubmit={handleSubmit}>
+          {evaluation.questions.map((q) => (
+            <div key={q.id} className="mb-6">
+              <Text className="font-semibold mb-2">{q.label}</Text>
+              {q.type === 'text' && (
+                <TextInput
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  value={responses[q.id] || ''}
+                  onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                  placeholder="Ingresa tu respuesta"
+                  required
+                />
+              )}
+              {q.type === 'scale' && (
+                <TextInput
+                  type="number"
+                  min="1"
+                  max="10"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  value={responses[q.id] || ''}
+                  onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                  placeholder="Escoge un número del 1 al 10"
+                  required
+                />
+              )}
+              {q.type === 'multiple-choice' && (
+                <select
+                  id={q.id}
+                  value={responses[q.id] || ''}
+                  onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  required
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  {q.options?.map((option, index) => (
+                    <option key={`${q.id}-option-${index}`} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ))}
+          <div className="flex space-x-4 mt-6">
+            <Button type="submit" color="green" className="bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded transition">
+              Guardar
+            </Button>
+            <Button type="button" color="red" onClick={() => setResponses({})} className="bg-red-600 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition">
+              Cancelar
+            </Button>
           </div>
-        ))}
-        <div className="flex space-x-4 mt-6">
-          <Button type="submit" color="green" className="bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded transition">
-            Guardar
-          </Button>
-          <Button type="button" color="red" onClick={() => setResponses({})} className="bg-red-600 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded transition">
-            Cancelar
-          </Button>
-        </div>
-      </form>
-    </Card>
-  </main>
+        </form>
+      </Card>
+    </main>
   );
 };
 

@@ -24,7 +24,7 @@ Decisiones de diseño y código:
   
   -El administrador puede ver el dashboard, crear empleados y crear evaluaciones.
   
-  -El empleado puede acceder al formulario de su evaluación. El formulario de evaluación es seleccionado por el admin.
+  -El empleado puede ver su perfil y responder al formulario de su evaluación. El formulario de evaluación es seleccionado por el admin.
 
   -Por simplicidad, al momento de crearse un empleado por el admin también se le puede crear el usuario y la contraseña.
 
@@ -50,4 +50,4 @@ Decisiones de diseño y código:
 
    -Para los estilos se uso Tailwind CSS.
 
-   -Para los gráficos se usó Chart.js
+   -Para los gráficos se usó Chart.js y rechart
