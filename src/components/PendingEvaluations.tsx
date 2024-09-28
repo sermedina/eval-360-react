@@ -9,7 +9,7 @@ interface EvaluationTable {
 }
 
 const PendingEvaluations: React.FC = () => {
-  const [evaluaciones, setEvaluations] = useState<EvaluationTable[]>([]);
+  const [evaluations, setEvaluations] = useState<EvaluationTable[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const PendingEvaluations: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {evaluaciones.map((evaluation) => (
+          {evaluations.map((evaluation) => (
             <tr
               key={evaluation.id}
               className="cursor-pointer hover:bg-gray-100"

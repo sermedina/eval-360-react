@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { API_KEY, API_ANSWER_URL } from '../config/config';
 import PendingEvaluations from './PendingEvaluations';
+import CalendarComponent from './CalendarComponent';
 
 interface EvaluationResponse {
     author: string;
@@ -80,7 +81,6 @@ const Dashboard = () => {
         leadership: entry.count > 0 ? (entry.totalLeadership / entry.count) : 0, // Promedio de liderazgo
     }));
     const delegationData = groupByAnswer('¿Confía y delega responsabilidades en su equipo?');
-    const decisionMakingData = groupByAnswer('¿Es capaz de tomar decisiones difíciles y responsabilizarse de los resultados?');
 
     return (
         <div>
@@ -119,23 +119,8 @@ const Dashboard = () => {
                 </ResponsiveContainer>
             </div>
 
-            {/* Gráfico de torta para toma de decisiones difíciles */}
-            <div style={{ width: '100%', height: 300 }}>
-                <h3>Toma de Decisiones Difíciles</h3>
-                <ResponsiveContainer>
-                    <PieChart>
-                        <Pie
-                            dataKey="value"
-                            data={[
-                                { name: 'Sí', value: decisionMakingData.yes },
-                                { name: 'No', value: decisionMakingData.no }
-                            ]}
-                            fill="#ffc658"
-                            label
-                        />
-                        <Tooltip />
-                    </PieChart>
-                </ResponsiveContainer>
+            <div className="bottom-4 left-8 w-1/4">
+                <CalendarComponent />
             </div>
 
             <div className="fixed bottom-4 right-4 w-1/4">

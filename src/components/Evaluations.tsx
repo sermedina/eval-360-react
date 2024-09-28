@@ -28,8 +28,8 @@ export interface Evaluation {
   title: string;
   isCurrent: boolean;
   questions: Question[];
+  dueDate: string;
 };
-
 
 const Evaluations = () => {
   const { user } = useAuth();
@@ -40,6 +40,7 @@ const Evaluations = () => {
     title: '',
     questions: [],
     isCurrent: false,
+    dueDate: ''
   });
   const [newQuestion, setNewQuestion] = useState<Question>({ id: Date.now(), type: 'text', label: '' });
   const [error, setError] = useState('');
@@ -100,6 +101,22 @@ const Evaluations = () => {
     setOptionInput(''); // Reset the option input
   };
 
+  const handleDeleteQuestion = (id: number) => {
+    setQuestions(questions.filter(question => question.id !== id));
+    setNewEvaluation({
+      ...newEvaluation,
+      questions: newEvaluation.questions.filter(question => question.id !== id),
+    });
+  };
+
+  const handleDeleteOption = (index: number) => {
+    const updatedOptions = newQuestion.options?.filter((_, i) => i !== index);
+    setNewQuestion({
+      ...newQuestion,
+      options: updatedOptions,
+    });
+  };
+
   const handleSaveEvaluation = async () => {
 
     // Si se marca como la evaluación actual, asegurarse de que solo una evaluación tenga isCurrent: true
@@ -107,7 +124,6 @@ const Evaluations = () => {
       const updatedEvaluations = evaluations.map((evaluation) => ({ ...evaluation, isCurrent: false }));
       setEvaluations(updatedEvaluations);
     }
-
 
     if (newEvaluation.title.trim() === '') {
       setError('El título de la evaluación no puede estar vacío.');
@@ -138,7 +154,7 @@ const Evaluations = () => {
 
       setEvaluations(updatedEvaluations);
       setIsCreating(false);
-      setNewEvaluation({ id: Date.now(), title: '', questions: [], isCurrent: false });
+      setNewEvaluation({ id: Date.now(), title: '', questions: [], isCurrent: false, dueDate: '' });
       setError('');
     } catch (err) {
       console.error('Error saving evaluation:', err);
@@ -147,7 +163,7 @@ const Evaluations = () => {
 
   const handleCancel = () => {
     setIsCreating(false);
-    setNewEvaluation({ id: Date.now(), title: '', questions: [], isCurrent: false });
+    setNewEvaluation({ id: Date.now(), title: '', questions: [], isCurrent: false, dueDate: '' });
     setError('');
   };
 
@@ -245,6 +261,17 @@ const Evaluations = () => {
             </Switch>
           </div>
 
+          <div className="mb-6">
+            <label className="font-semibold mb-2">Fecha de vencimiento</label>
+            <input
+              type="date"
+              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+              value={newEvaluation.dueDate}
+              onChange={(e) => setNewEvaluation({ ...newEvaluation, dueDate: e.target.value })}
+              required
+            />
+          </div>
+
           <div className="question-creation space-y-4">
             <select
               value={newQuestion.type}
@@ -264,97 +291,101 @@ const Evaluations = () => {
             />
 
             {newQuestion.type === 'multiple-choice' && (
-              <div className="space-y-2">
+              <div className="flex flex-col">
                 <TextInput
+                  placeholder="Añadir opción"
                   value={optionInput}
                   onChange={handleOptionChange}
-                  placeholder="Añadir opción"
                   className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
                 />
-                <Button onClick={handleAddOption} className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
-                  Agregar Opción
+                <Button onClick={handleAddOption} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition mt-2">
+                  Añadir Opción
                 </Button>
-                <ul className="list-disc pl-5">
+                <ul className="list-disc list-inside">
                   {newQuestion.options?.map((option, index) => (
-                    <li key={index}>{option}</li>
+                    <li key={index} className="flex justify-between items-center">
+                      <span>{option}</span>
+                      <Button
+                        className="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition"
+                        onClick={() => handleDeleteOption(index)}
+                      >
+                        Eliminar
+                      </Button>
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            <Button onClick={handleAddQuestion} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+            <Button onClick={handleAddQuestion} className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
               Añadir Pregunta
             </Button>
+          </div>
 
-            <h3 className="text-lg font-semibold mt-6">Preguntas añadidas</h3>
-            <ul className="list-disc pl-5 space-y-2">
+          <div className="questions-list mt-6">
+            <h2 className="font-semibold mb-4">Preguntas añadidas</h2>
+            <ul>
               {questions.map((question) => (
-                <li key={question.id}>
-                  {question.label} - {question.type}
-                  {question.type === 'multiple-choice' && (
-                    <ul className="list-inside pl-4">
-                      {question.options?.map((option, idx) => (
-                        <li key={idx}>{option}</li>
-                      ))}
-                    </ul>
-                  )}
+                <li key={question.id} className="flex justify-between items-center mb-2">
+                  <span>{question.label}</span>
+                  <Button
+                    className="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition"
+                    onClick={() => handleDeleteQuestion(question.id)}
+                  >
+                    Eliminar
+                  </Button>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="flex space-x-4 mt-6">
-            <Button onClick={handleSaveEvaluation} className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+          <div className="mt-6">
+            <Button onClick={handleSaveEvaluation} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
               Guardar Evaluación
             </Button>
-            <Button onClick={handleCancel} className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition">
+            <Button onClick={handleCancel} className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition ml-4">
               Cancelar
             </Button>
           </div>
         </div>
       )}
-
       {!isCreating && (
-        <Table className="mt-6 w-full border border-gray-300 rounded-lg shadow">
-          <TableHead className="bg-gray-100">
+        <Table className="mt-6">
+          <TableHead>
             <TableRow>
-              <TableCell className="font-semibold p-4">Título</TableCell>
-              <TableCell className="font-semibold p-4">Preguntas</TableCell>
-              <TableCell className="font-semibold p-4">Acciones</TableCell>
+              <TableCell>Título</TableCell>
+              <TableCell>Evaluación Actual</TableCell>
+              <TableCell>Fecha de Vencimiento</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {evaluations.map((evaluation) => (
               <TableRow key={evaluation.id}>
-                <TableCell className="p-4">{evaluation.title}</TableCell>
-                <TableCell className="p-4">
-                  {evaluation.questions.map((question, index) => (
-                    <div key={index}>
-                      {question.label} ({question.type})
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell className="p-4">
-                  <label htmlFor="isCurrent" className="mr-2">
-                    Evaluación actual
-                  </label>
+                <TableCell>{evaluation.title}</TableCell>
+                <TableCell>
                   <Switch
                     checked={evaluation.isCurrent}
                     onChange={() => handleToggleCurrent(evaluation.id)}
                     className="ml-2"
-                  />
+                  >
+                    <span className="sr-only">Es la evaluación actual</span>
+                  </Switch>
                 </TableCell>
-                <TableCell className="p-4">
-                  <Button onClick={() => handleDeleteEvaluation(evaluation.id)} className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600 transition">
-                    Borrar
+                <TableCell>{evaluation.dueDate}</TableCell>
+                <TableCell>
+                  <Button
+                    className="bg-red-500 text-white py-1 px-4 rounded-lg hover:bg-red-600 transition"
+                    onClick={() => handleDeleteEvaluation(evaluation.id)}
+                  >
+                    Eliminar
                   </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      )}
-    </Card>
+      )}</Card>
   );
 };
 

@@ -10,6 +10,7 @@ export type Question = {
     title: string;
     isCurrent: boolean;
     questions: Question[];
+    dueDate: string
   };
   
   export type Response = {

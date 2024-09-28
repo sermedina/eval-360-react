@@ -51,3 +51,5 @@ Decisiones de diseño y código:
    -Para los estilos se uso Tailwind CSS.
 
    -Para los gráficos se usó Chart.js y rechart
+
+   -Para el calendario se usó la libería React Calendar

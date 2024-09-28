@@ -3,24 +3,8 @@ import { Button, Card, TextInput, Title, Text } from '@tremor/react';
 import { API_KEY } from '../config/config.ts';
 import { API_EVALUATION_URL } from '../config/config.ts';
 import { API_ANSWER_URL } from '../config/config.ts';
+import { Evaluation, Response } from '../types.ts';
 
-type Question = {
-  type: 'scale' | 'multiple-choice' | 'text';
-  label: string;
-  options?: string[]; // Para las de opción múltiple
-  id: string;
-};
-
-type Evaluation = {
-  id: number;
-  title: string;
-  isCurrent: boolean;
-  questions: Question[];
-};
-
-type Response = {
-  [key: string]: string; // Clave es string (label) y valor es string (respuesta)
-};
 
 const EvaluationForm = () => {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);

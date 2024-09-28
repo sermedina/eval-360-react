@@ -1,0 +1,71 @@
+.highlight-red {
+    background-color: red !important;
+    color: white;
+  }
+
+
+/* Modal */
+.modal-content {
+    padding: 20px; /* Espaciado interno */
+    position: relative; /* Posicionamiento relativo para la X */
+    overflow: hidden; /* Evitar el scroll */
+    max-width: 500px; /* Ancho máximo del modal */
+    margin: auto; /* Centrando el modal */
+    background-color: #fff; /* Color de fondo blanco */
+    border-radius: 8px; /* Esquinas redondeadas */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+}
+
+/* Botón de cerrar */
+.modal-close-button {
+    position: absolute; /* Posicionar la X en la esquina */
+    top: 15px; /* Ajustar la posición vertical */
+    right: 15px; /* Ajustar la posición horizontal */
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    font-size: 1.5rem; /* Tamaño de fuente */
+    cursor: pointer; /* Cursor de puntero */
+    color: #333; /* Color del texto de la X */
+}
+
+/* Título del modal */
+.modal-title {
+    font-size: 1.5rem; /* Tamaño de fuente */
+    font-weight: bold; /* Negrita */
+    color: #333; /* Color del texto */
+    margin-bottom: 15px; /* Espacio inferior */
+    text-align: center; /* Centrado */
+}
+
+/* Fecha resaltada */
+.modal-date {
+    color: #007BFF; /* Color del texto de la fecha */
+}
+
+/* Lista de evaluaciones */
+.evaluation-list {
+    list-style-type: none; /* Sin viñetas */
+    padding-left: 0; /* Sin padding */
+    margin: 0; /* Eliminar margen de la lista */
+}
+
+/* Elemento de evaluación */
+.evaluation-item {
+    padding: 10px 15px; /* Espaciado interno */
+    background-color: #f9f9f9; /* Fondo ligero */
+    border-radius: 5px; /* Esquinas redondeadas */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para cada evaluación */
+    transition: background-color 0.3s; /* Transición suave */
+    margin-bottom: 0; /* Eliminar margen inferior para evitar huecos */
+}
+
+/* Efecto al pasar el mouse */
+.evaluation-item:hover {
+    background-color: #e9ecef; /* Color al pasar el mouse */
+}
+
+/* Mensaje de no hay evaluaciones */
+.no-evaluations {
+    color: #666; /* Color del texto */
+    margin-top: 10px; /* Margen superior */
+}
