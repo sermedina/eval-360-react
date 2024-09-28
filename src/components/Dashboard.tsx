@@ -84,11 +84,11 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h2>Dashboard de Evaluaciones</h2>
+            <h2 className="text-2xl font-bold dark:text-white">Dashboard de Evaluaciones</h2>
 
             {/* Gráfico de barras para capacidad de liderazgo */}
-            <div style={{ width: '100%', height: 300 }}>
-                <h3>Capacidad de Liderazgo</h3>
+            <div className="w-full h-72 my-6">
+                <h3 className="text-lg font-semibold dark:text-gray-300">Capacidad de Liderazgo</h3>
                 <ResponsiveContainer>
                     <BarChart data={leadershipScores}>
                         <XAxis dataKey="author" />
@@ -101,8 +101,8 @@ const Dashboard = () => {
             </div>
 
             {/* Gráfico de torta para delegación de responsabilidades */}
-            <div style={{ width: '100%', height: 300 }}>
-                <h3>Delegación de Responsabilidades</h3>
+            <div className="w-full h-72 my-6">
+                <h3 className="text-lg font-semibold dark:text-gray-300">Delegación de Responsabilidades</h3>
                 <ResponsiveContainer>
                     <PieChart>
                         <Pie
@@ -119,12 +119,14 @@ const Dashboard = () => {
                 </ResponsiveContainer>
             </div>
 
+            {/* Calendario */}
             <div className="bottom-4 left-8 w-1/4">
                 <CalendarComponent />
             </div>
 
-            <div className="fixed bottom-4 right-4 w-1/4">
-                <h2 className="text-xl font-semibold mb-2">Evaluaciones Pendientes</h2>
+            {/* Evaluaciones Pendientes */}
+            <div className="fixed bottom-4 right-4 w-1/4 bg-white shadow-md rounded-lg p-4 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">Evaluaciones Pendientes</h2>
                 <PendingEvaluations />
             </div>
         </div>

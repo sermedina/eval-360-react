@@ -223,8 +223,8 @@ const Evaluations = () => {
   };
 
   return (
-    <Card className="p-6 bg-white shadow-lg rounded-lg">
-      <Title className="text-xl font-bold mb-4">Evaluaciones</Title>
+    <Card className="p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
+      <Title className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Evaluaciones</Title>
 
       {error && (
         <div className="mb-4">
@@ -233,7 +233,7 @@ const Evaluations = () => {
       )}
 
       {user?.role === 'admin' && !isCreating && (
-        <Button onClick={handleCreateEvaluation} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+        <Button onClick={handleCreateEvaluation} className="bg-blue-500 dark:bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 transition">
           Crear Nueva Evaluación
         </Button>
       )}
@@ -244,11 +244,11 @@ const Evaluations = () => {
             placeholder="Nombre de la Evaluación"
             value={newEvaluation.title}
             onChange={(e) => setNewEvaluation({ ...newEvaluation, title: e.target.value })}
-            className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+            className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
           />
 
           <div className="flex items-center mt-4">
-            <label htmlFor="isCurrent" className="mr-2">
+            <label htmlFor="isCurrent" className="mr-2 text-gray-900 dark:text-gray-300">
               Es la evaluación actual
             </label>
             <Switch
@@ -262,10 +262,10 @@ const Evaluations = () => {
           </div>
 
           <div className="mb-6">
-            <label className="font-semibold mb-2">Fecha de vencimiento</label>
+            <label className="font-semibold mb-2 text-gray-900 dark:text-gray-300">Fecha de vencimiento</label>
             <input
               type="date"
-              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
               value={newEvaluation.dueDate}
               onChange={(e) => setNewEvaluation({ ...newEvaluation, dueDate: e.target.value })}
               required
@@ -276,7 +276,7 @@ const Evaluations = () => {
             <select
               value={newQuestion.type}
               onChange={(e) => setNewQuestion({ ...newQuestion, type: e.target.value })}
-              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               <option value="text">Texto</option>
               <option value="multiple-choice">Opción Múltiple</option>
@@ -287,7 +287,7 @@ const Evaluations = () => {
               placeholder="Pregunta"
               value={newQuestion.label}
               onChange={(e) => setNewQuestion({ ...newQuestion, label: e.target.value })}
-              className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
             />
 
             {newQuestion.type === 'multiple-choice' && (
@@ -296,17 +296,17 @@ const Evaluations = () => {
                   placeholder="Añadir opción"
                   value={optionInput}
                   onChange={handleOptionChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
-                <Button onClick={handleAddOption} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition mt-2">
+                <Button onClick={handleAddOption} className="bg-blue-500 dark:bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 transition mt-2">
                   Añadir Opción
                 </Button>
                 <ul className="list-disc list-inside">
                   {newQuestion.options?.map((option, index) => (
                     <li key={index} className="flex justify-between items-center">
-                      <span>{option}</span>
+                      <span className="text-gray-900 dark:text-gray-300">{option}</span>
                       <Button
-                        className="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition"
+                        className="bg-red-500 dark:bg-red-600 text-white py-1 px-2 rounded-lg hover:bg-red-600 dark:hover:bg-red-500 transition"
                         onClick={() => handleDeleteOption(index)}
                       >
                         Eliminar
@@ -317,19 +317,19 @@ const Evaluations = () => {
               </div>
             )}
 
-            <Button onClick={handleAddQuestion} className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+            <Button onClick={handleAddQuestion} className="bg-green-500 dark:bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-600 dark:hover:bg-green-500 transition">
               Añadir Pregunta
             </Button>
           </div>
 
           <div className="questions-list mt-6">
-            <h2 className="font-semibold mb-4">Preguntas añadidas</h2>
+            <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-300">Preguntas añadidas</h2>
             <ul>
               {questions.map((question) => (
                 <li key={question.id} className="flex justify-between items-center mb-2">
-                  <span>{question.label}</span>
+                  <span className="text-gray-900 dark:text-gray-300">{question.label}</span>
                   <Button
-                    className="bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition"
+                    className="bg-red-500 dark:bg-red-600 text-white py-1 px-2 rounded-lg hover:bg-red-600 dark:hover:bg-red-500 transition"
                     onClick={() => handleDeleteQuestion(question.id)}
                   >
                     Eliminar
@@ -340,52 +340,57 @@ const Evaluations = () => {
           </div>
 
           <div className="mt-6">
-            <Button onClick={handleSaveEvaluation} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+            <Button onClick={handleSaveEvaluation} className="bg-blue-500 dark:bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 transition">
               Guardar Evaluación
             </Button>
-            <Button onClick={handleCancel} className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition ml-4">
+            <Button onClick={handleCancel} className="bg-gray-500 dark:bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-600 dark:hover:bg-gray-500 transition ml-4">
               Cancelar
             </Button>
           </div>
         </div>
       )}
+
       {!isCreating && (
-        <Table className="mt-6">
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Evaluación Actual</TableCell>
-              <TableCell>Fecha de Vencimiento</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {evaluations.map((evaluation) => (
-              <TableRow key={evaluation.id}>
-                <TableCell>{evaluation.title}</TableCell>
-                <TableCell>
-                  <Switch
-                    checked={evaluation.isCurrent}
-                    onChange={() => handleToggleCurrent(evaluation.id)}
-                    className="ml-2"
-                  >
-                    <span className="sr-only">Es la evaluación actual</span>
-                  </Switch>
-                </TableCell>
-                <TableCell>{evaluation.dueDate}</TableCell>
-                <TableCell>
-                  <Button
-                    className="bg-red-500 text-white py-1 px-4 rounded-lg hover:bg-red-600 transition"
-                    onClick={() => handleDeleteEvaluation(evaluation.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}</Card>
+       <div className="overflow-x-auto">
+       <Table className="mt-6">
+         <TableHead>
+           <TableRow>
+             <TableCell className="text-gray-900 dark:text-gray-300">Título</TableCell>
+             <TableCell className="text-gray-900 dark:text-gray-300">Evaluación Actual</TableCell>
+             <TableCell className="text-gray-900 dark:text-gray-300">Fecha de Vencimiento</TableCell>
+             <TableCell className="text-gray-900 dark:text-gray-300">Acciones</TableCell>
+           </TableRow>
+         </TableHead>
+         <TableBody>
+           {evaluations.map((evaluation) => (
+             <TableRow key={evaluation.id}>
+               <TableCell className="text-gray-900 dark:text-gray-300">{evaluation.title}</TableCell>
+               <TableCell className="relative">
+                 <Switch
+                   checked={evaluation.isCurrent}
+                   onChange={() => handleToggleCurrent(evaluation.id)}
+                  className="absolute ml-2"
+                 >
+                   <span className="sr-only">Es la evaluación actual</span>
+                 </Switch>
+               </TableCell>
+               <TableCell className="text-gray-900 dark:text-gray-300">{evaluation.dueDate}</TableCell>
+               <TableCell>
+                 <Button
+                   className="bg-red-500 dark:bg-red-600 text-white py-1 px-4 rounded-lg hover:bg-red-600 dark:hover:bg-red-500 transition"
+                   onClick={() => handleDeleteEvaluation(evaluation.id)}
+                 >
+                   Eliminar
+                 </Button>
+               </TableCell>
+             </TableRow>
+           ))}
+         </TableBody>
+       </Table>
+     </div>
+     
+      )}
+    </Card>
   );
 };
 

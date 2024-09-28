@@ -41,11 +41,9 @@ const CalendarComponent: React.FC = () => {
     // Filtrar evaluaciones según la fecha seleccionada
     const handleDateClick = (date: Date) => {
         const formattedDate = date.toISOString().slice(0, 10); // Convertir a formato YYYY-MM-DD
-        console.log(formattedDate);
         const evaluationsOnDate = evaluations.filter(
             (evaluation) => evaluation.dueDate === formattedDate
         );
-        console.log(evaluationsOnDate);
         setEvaluationsOnSelectedDate(evaluationsOnDate);
         setSelectedDate(date);
         setModalIsOpen(true); // Abrir modal con evaluaciones
@@ -78,44 +76,45 @@ const CalendarComponent: React.FC = () => {
     };
 
     return (
-        <div style={{ width: '100%', height: 'auto' }}>
+        <div className="w-full h-auto">
             <Calendar
                 onClickDay={handleDateClick}
                 tileContent={tileContent}
                 tileClassName={tileClassName}
+                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700" // Clase para el calendario
             />
             {/* Modal para mostrar evaluaciones */}
             <Modal
-    isOpen={modalIsOpen}
-    onRequestClose={closeModal}
-    contentLabel="Evaluaciones"
-    className="modal-content" // Clase para el contenido del modal
->
-    <button
-        onClick={closeModal}
-        className="modal-close-button" // Clase para el botón de cerrar
-    >
-        &times; {/* Esta es la X */}
-    </button>
-
-    <h2 className="modal-title">
-        Evaluaciones hasta el <span className="modal-date">{selectedDate?.toISOString().slice(0, 10)}</span>
-    </h2>
-    {evaluationsOnSelectedDate.length > 0 ? (
-        <ul className="evaluation-list">
-            {evaluationsOnSelectedDate.map((evaluation) => (
-                <li
-                    key={evaluation.id}
-                    className="evaluation-item" // Clase para cada evaluación
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                contentLabel="Evaluaciones"
+                className="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg" // Clase para el contenido del modal
+            >
+                <button
+                    onClick={closeModal}
+                    className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 text-xl hover:text-gray-700 dark:hover:text-gray-200 transition-colors" // Clase para el botón de cerrar
                 >
-                    {evaluation.title}
-                </li>
-            ))}
-        </ul>
-    ) : (
-        <p className="no-evaluations">No hay evaluaciones para esta fecha</p>
-    )}
-</Modal>
+                    &times; {/* Esta es la X */}
+                </button>
+
+                <h2 className="modal-title text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                    Evaluaciones hasta el <span className="text-blue-600 dark:text-blue-400">{selectedDate?.toISOString().slice(0, 10)}</span>
+                </h2>
+                {evaluationsOnSelectedDate.length > 0 ? (
+                    <ul className="evaluation-list space-y-2">
+                        {evaluationsOnSelectedDate.map((evaluation) => (
+                            <li
+                                key={evaluation.id}
+                                className="evaluation-item p-3 bg-gray-100 dark:bg-gray-700 rounded-md shadow-md text-gray-800 dark:text-gray-200" // Clase para cada evaluación
+                            >
+                                {evaluation.title}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="no-evaluations text-gray-500 dark:text-gray-400 mt-4">No hay evaluaciones para esta fecha</p>
+                )}
+            </Modal>
         </div>
     );
 };

@@ -8,16 +8,14 @@ interface AlertProps {
 const Alert: React.FC<AlertProps> = ({ message, type }) => {
   return (
     <div
-      style={{
-        padding: '10px',
-        borderRadius: '5px',
-        backgroundColor: type === 'error' ? '#f8d7da' : '#d4edda',
-        color: type === 'error' ? '#721c24' : '#155724',
-        marginBottom: '10px',
-      }}
-    >
-      {message}
-    </div>
+  className={`p-3 rounded-md mb-2 ${
+    type === 'error'
+      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+  }`}
+>
+  {message}
+</div>
   );
 };
 

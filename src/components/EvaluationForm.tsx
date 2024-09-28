@@ -109,16 +109,16 @@ const EvaluationForm = () => {
   }
 
   return (
-    <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
-      <Card className="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
-        <Title className="text-2xl font-bold mb-4">{evaluation.title}</Title>
+    <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-800 overflow-y-auto">
+      <Card className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-6 w-full max-w-2xl">
+        <Title className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{evaluation.title}</Title>
         <form onSubmit={handleSubmit}>
           {evaluation.questions.map((q) => (
             <div key={q.id} className="mb-6">
-              <Text className="font-semibold mb-2">{q.label}</Text>
+              <Text className="font-semibold mb-2 text-gray-900 dark:text-gray-300">{q.label}</Text>
               {q.type === 'text' && (
                 <TextInput
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   value={responses[q.id] || ''}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
                   placeholder="Ingresa tu respuesta"
@@ -130,7 +130,7 @@ const EvaluationForm = () => {
                   type="number"
                   min="1"
                   max="10"
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   value={responses[q.id] || ''}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
                   placeholder="Escoge un número del 1 al 10"
@@ -142,7 +142,7 @@ const EvaluationForm = () => {
                   id={q.id}
                   value={responses[q.id] || ''}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
-                  className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="" disabled>Selecciona una opción</option>
@@ -166,6 +166,7 @@ const EvaluationForm = () => {
         </form>
       </Card>
     </main>
+
   );
 };
 
