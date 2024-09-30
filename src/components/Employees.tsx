@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Table, TableHead, TableBody, TableRow, TableCell, TextInput, Text } from '@tremor/react';
-import crypto from 'crypto-js';
-import { API_KEY } from '../config/config.ts';
-import { API_EMPLOYEE_URL } from '../config/config.ts';
 import { Employee } from '../types.ts';
+import  { fetchEmployees, saveEmployee, deleteEmployee } from '../services/employeeService.ts';
 
 
 
@@ -14,54 +12,43 @@ const Employees: React.FC = () => {
   const [error, setError] = useState('');
 
 
-  const fetchEmployees = async () => {
+  useEffect(() => {
+    fetchEmployees()
+    .then(setEmployees)
+    .catch(console.error);
+  }, []);
+
+  const handleDeleteEmployee = async (id: number) => {
     try {
-      const response = await fetch(API_EMPLOYEE_URL, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al cargar los empleados');
+      const updatedEmployees = await deleteEmployee(id, employees);
+      if (updatedEmployees) { 
+        setEmployees(updatedEmployees);
+      } else {
+        setError('Error al eliminar el empleado');
       }
-
-      const data = await response.json();
-      setEmployees(data.record || []);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      console.error(error);
+      setError('Error al eliminar el empleado');
     }
-  };
-
-  const handleDeleteEmployee = (id: number) => {
-    setEmployees(employees.filter(emp => emp.id !== id));
   };
 
   const handleCreateEmployee = async () => {
     if (newEmployee && newEmployee.name && newEmployee.email && newEmployee.position) {
-      // Guardar el nuevo empleado en jsonbin.io
-
-      const hashedPassword = crypto.SHA256(newEmployee.password).toString();
-      const response = await fetch(API_EMPLOYEE_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-        },
-        body: JSON.stringify([
-          ...employees,
-          { ...newEmployee, id: employees.length + 1, password: hashedPassword },
-        ]),
-      });
-
-      if (response.ok) {
-        const updatedEmployees = await response.json();
-        setEmployees(updatedEmployees.record); // Actualizar estado con la nueva lista
+      try {
+        const updatedEmployees = await saveEmployee(employees, newEmployee);
+        setEmployees(updatedEmployees);
         setShowForm(false);
-        setNewEmployee({ id: 0, name: '', email: '', position: '', username: '', password: '', role: 'employee' });
+        setNewEmployee({
+          id: 0,
+          name: '',
+          email: '',
+          position: '',
+          username: '',
+          password: '',
+          role: 'employee',
+        });
         setError('');
-      } else {
+      } catch {
         setError('Error al guardar el empleado');
       }
     } else {
@@ -85,9 +72,7 @@ const Employees: React.FC = () => {
     );
   };
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+
 
   return (
     <Card className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full">
@@ -200,6 +185,7 @@ const Employees: React.FC = () => {
           <TableHead className="bg-gray-100 dark:bg-gray-700">
             <TableRow>
               <TableCell className="px-4 py-2 font-semibold text-left text-gray-700 dark:text-gray-300">Nombre</TableCell>
+              <TableCell className="px-4 py-2 font-semibold text-left text-gray-700 dark:text-gray-300">Usuario</TableCell>
               <TableCell className="px-4 py-2 font-semibold text-left text-gray-700 dark:text-gray-300">Email</TableCell>
               <TableCell className="px-4 py-2 font-semibold text-left text-gray-700 dark:text-gray-300">Cargo</TableCell>
               <TableCell className="px-4 py-2 font-semibold text-left text-gray-700 dark:text-gray-300">Acciones</TableCell>
@@ -209,6 +195,7 @@ const Employees: React.FC = () => {
             {employees.map((employee) => (
               <TableRow key={employee.id} className="border-t border-gray-200 dark:border-gray-600">
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.name}</TableCell>
+                <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.username}</TableCell>
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.email}</TableCell>
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.position}</TableCell>
                 <TableCell className="px-4 py-2">

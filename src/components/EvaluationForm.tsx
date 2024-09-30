@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button, Card, TextInput, Title, Text } from '@tremor/react';
-import { API_KEY } from '../config/config.ts';
-import { API_EVALUATION_URL } from '../config/config.ts';
-import { API_ANSWER_URL } from '../config/config.ts';
 import { Evaluation, Response } from '../types.ts';
+import { fetchAnswers, saveAnswers } from '../services/answerService.ts';
+import { fetchEvaluations } from '../services/evaluationService.ts';
 
 
 const EvaluationForm = () => {
@@ -14,28 +13,17 @@ const EvaluationForm = () => {
 
   // Obtener la evaluación actual
   useEffect(() => {
-    const fetchCurrentEvaluation = async () => {
-      try {
-        const response = await fetch(API_EVALUATION_URL, {
-          headers: {
-            'X-Master-Key': API_KEY,
-          },
-        });
-        const data = await response.json();
-        const currentEval = data.record.find((evaluation: Evaluation) => evaluation.isCurrent);
+    fetchEvaluations()
+      .then((evaluationsResponse) => {
+        const currentEval = evaluationsResponse.record.find((evaluation: Evaluation) => evaluation.isCurrent);
         setEvaluation(currentEval || null);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching evaluation:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchCurrentEvaluation();
+      })
+      .catch((error) => console.error('Error fetching evaluations:', error))
+      .finally(() => setLoading(false));
   }, []);
 
   // Manejar el cambio de respuestas
-  const handleResponseChange = (id: string, value: string) => {
+  const handleResponseChange = (id: number, value: string) => {
     setResponses((prevResponses) => ({ ...prevResponses, [id]: value }));
   };
 
@@ -72,32 +60,12 @@ const EvaluationForm = () => {
       answers,
     };
 
-    try {
+    const answersResponse = await fetchAnswers();
 
-      const binResponse = await fetch(API_ANSWER_URL, {
-        headers: {
-          "X-Master-Key": API_KEY,
-        },
-      });
-      const binData = await binResponse.json();
+    // Combina las respuestas existentes con la nueva respuesta
+    const newAnswers = [...answersResponse, newResponse];
+    saveAnswers(newAnswers);
 
-      // Combina las respuestas existentes con la nueva respuesta
-      const newAnswers = [...binData.record, newResponse];
-
-      const response = await fetch(API_ANSWER_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-        },
-        body: JSON.stringify(newAnswers),
-      });
-      if (response.ok) {
-        alert('Respuestas guardadas con éxito');
-      }
-    } catch (error) {
-      console.error('Error saving responses:', error);
-    }
   };
 
   if (loading) {
@@ -118,7 +86,7 @@ const EvaluationForm = () => {
               <Text className="font-semibold mb-2 text-gray-900 dark:text-gray-300">{q.label}</Text>
               {q.type === 'text' && (
                 <TextInput
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-black-800 text-gray-900 dark:text-black-200" 
                   value={responses[q.id] || ''}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
                   placeholder="Ingresa tu respuesta"
@@ -126,20 +94,18 @@ const EvaluationForm = () => {
                 />
               )}
               {q.type === 'scale' && (
-                <TextInput
-                  type="number"
+                <><input
+                  type="range"
                   min="1"
                   max="10"
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  value={responses[q.id] || ''}
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700"
+                  value={responses[q.id] || 1}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
-                  placeholder="Escoge un número del 1 al 10"
-                  required
-                />
+                  required /><p className="text-center">{responses[q.id] || 1}</p></>
               )}
               {q.type === 'multiple-choice' && (
                 <select
-                  id={q.id}
+                  id={q.id.toString()}
                   value={responses[q.id] || ''}
                   onChange={(e) => handleResponseChange(q.id, e.target.value)}
                   className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"

@@ -2,7 +2,7 @@ export type Question = {
     type: 'scale' | 'multiple-choice' | 'text';
     label: string;
     options?: string[]; // Para las de opción múltiple
-    id: string;
+    id: number;
   };
   
   export interface Evaluation {

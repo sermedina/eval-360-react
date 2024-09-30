@@ -11,11 +11,20 @@ import Evaluations from './components/Evaluations'
 import EvaluationForm from './components/EvaluationForm'
 import PendingEvaluations from './components/PendingEvaluations'
 import EvaluationDetail from './components/EvaluationDetail'
+import { useEffect } from 'react'
 
 function App() {
   const { user } = useAuth(); 
 
-
+  useEffect(() => {
+    // Verificar modo oscuro
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
 
   return (
     <div className="flex h-screen">

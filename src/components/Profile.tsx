@@ -1,43 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, Title, Text } from '@tremor/react';
-import { API_KEY } from '../config/config.ts';
-import { API_ANSWER_URL } from '../config/config.ts';
+import { fetchAnswers } from '../services/answerService.ts';
 
 import { Response } from "../types.ts";
 
 const Profile = () => {
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const [responses, setResponses] = useState<Response[]>([]);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
     useEffect(() => {
-
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme === 'dark') {
             setIsDarkMode(true);
             document.documentElement.classList.add('dark');
         }
-        const fetchResponses = async () => {
-            try {
-                const response = await fetch(API_ANSWER_URL, {
-                    headers: {
-                        'X-Master-Key': API_KEY,
-                    },
-                });
-                const data = await response.json();
-                // Filtrar las respuestas del empleado logueado
-                const employeeResponses = data.record.filter(
+        fetchAnswers()
+            .then((answersResponse) => {
+                const employeeResponses = answersResponse.filter(
                     (item: Response) => item.author === user?.name // Filtras por nombre del empleado
                 );
                 setResponses(employeeResponses);
-            } catch (error) {
-                console.error('Error fetching responses:', error);
-            }
-        };
-
-        fetchResponses();
+            })
+            .catch((error) => console.error('Error fetching responses:', error))
     }, [user?.name]);
+
 
     const toggleDarkMode = () => {
         if (isDarkMode) {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import Modal from 'react-modal';
-import { API_KEY, API_EVALUATION_URL } from '../config/config';
 import 'react-calendar/dist/Calendar.css';
 import { Evaluation } from '../types';
+import  { fetchEvaluations } from '../services/evaluationService';
 
 Modal.setAppElement('#root'); // O el ID de tu App root
 
@@ -15,27 +15,9 @@ const CalendarComponent: React.FC = () => {
 
     // Fetch evaluations from jsonbin.io
     useEffect(() => {
-        const fetchEvaluations = async () => {
-            try {
-                const response = await fetch(API_EVALUATION_URL, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': API_KEY,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error fetching evaluations');
-                }
-
-                const data = await response.json();
-                setEvaluations(data.record); // Ajusta el acceso dependiendo de cómo se estructura la respuesta de tu API
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchEvaluations();
+        fetchEvaluations()
+        .then(setEvaluations)
+        .catch(console.error);
     }, []);
 
     // Filtrar evaluaciones según la fecha seleccionada

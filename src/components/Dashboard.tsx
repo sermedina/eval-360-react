@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { API_KEY, API_ANSWER_URL } from '../config/config';
 import PendingEvaluations from './PendingEvaluations';
 import CalendarComponent from './CalendarComponent';
+import  { fetchAnswers } from '../services/answerService';
 
 interface EvaluationResponse {
     author: string;
@@ -16,24 +16,9 @@ const Dashboard = () => {
     const [data, setData] = useState<EvaluationResponse[]>([]);
 
     useEffect(() => {
-        // Fetch evaluations from jsonbin.io
-        const fetchEvaluations = async () => {
-            const response = await fetch(API_ANSWER_URL, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Error fetching evaluations');
-            }
-
-            const json = await response.json();
-            setData(json.record);
-        };
-
-        fetchEvaluations();
+        fetchAnswers()
+        .then(setData)
+        .catch(console.error);
     }, []);
 
     // Agrupamos y preparamos datos para gráficos

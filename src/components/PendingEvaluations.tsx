@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_KEY } from '../config/config.ts';
-import { API_EVALUATION_URL } from '../config/config.ts';
+import  { fetchEvaluations } from '../services/evaluationService.ts';
 
 interface EvaluationTable {
   id: number;
@@ -13,22 +12,9 @@ const PendingEvaluations: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
-    const fetchEvaluations = async () => {
-      try {
-        const response = await fetch(API_EVALUATION_URL, {
-          headers: {
-            'X-Master-Key': API_KEY,
-          },
-        });
-        const data = await response.json();
-        setEvaluations(data.record);
-      } catch (err) {
-        console.error('Error fetching evaluations:', err);
-      }
-    };
-
-    fetchEvaluations();
+    fetchEvaluations()
+      .then(setEvaluations)
+      .catch(console.error);
   }, []);
 
   const handleRowClick = (id: number) => {

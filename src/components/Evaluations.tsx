@@ -15,21 +15,9 @@ import {
 import Alert from './Alert';
 import { API_KEY } from '../config/config.ts';
 import { API_EVALUATION_URL } from '../config/config.ts';
+import  { fetchEvaluations, deleteEvaluation } from '../services/evaluationService.ts';
+import { Evaluation, Question } from '../types.ts';
 
-interface Question {
-  id: number;
-  type: string;
-  label: string;
-  options?: string[];
-}
-
-export interface Evaluation {
-  id: number;
-  title: string;
-  isCurrent: boolean;
-  questions: Question[];
-  dueDate: string;
-};
 
 const Evaluations = () => {
   const { user } = useAuth();
@@ -50,22 +38,10 @@ const Evaluations = () => {
 
   // Cargar evaluaciones desde jsonbin.io
   useEffect(() => {
-    const fetchEvaluations = async () => {
-      try {
-        const response = await fetch(API_EVALUATION_URL, {
-          headers: {
-            'X-Master-Key': API_KEY,
-          },
-        });
-        const data = await response.json();
-        setEvaluations(data.record);
-      } catch (err) {
-        console.error('Error fetching evaluations:', err);
-      }
-    };
-
-    fetchEvaluations();
-  }, []);
+    fetchEvaluations()
+    .then(setEvaluations)
+    .catch(console.error);
+}, []);
 
   const handleCreateEvaluation = () => {
     setIsCreating(true);
@@ -168,48 +144,16 @@ const Evaluations = () => {
   };
 
   const handleDeleteEvaluation = async (id: number) => {
-    const updatedEvaluations = evaluations.filter(evaluation => evaluation.id !== id);
-
     try {
-      // Actualizar evaluaciones en jsonbin.io después de eliminar una
-      const response = await fetch(API_EVALUATION_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-        },
-        body: JSON.stringify(updatedEvaluations),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al eliminar la evaluación en jsonbin.io');
+      const updatedEvaluations = await deleteEvaluation(id, evaluations);
+      if (updatedEvaluations) { 
+        setEvaluations(updatedEvaluations);
+      } else {
+        setError('Error al eliminar la evaluación');
       }
-
-      setEvaluations(updatedEvaluations);
-    } catch (err) {
-      console.error('Error deleting evaluation:', err);
-    }
-  };
-
-  const updateEvaluations = async (updatedEvaluations: Evaluation[]) => {
-    try {
-      const response = await fetch(API_EVALUATION_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-        },
-        body: JSON.stringify(updatedEvaluations),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error updating evaluations: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setEvaluations(data.record);
     } catch (error) {
-      console.error('Error updating evaluations:', error);
+      console.error(error);
+      setError('Error al eliminar la evaluación');
     }
   };
 
@@ -219,7 +163,7 @@ const Evaluations = () => {
         ? { ...evaluation, isCurrent: true }
         : { ...evaluation, isCurrent: false }
     );
-    updateEvaluations(updatedEvaluations);
+    setEvaluations(updatedEvaluations);
   };
 
   return (
@@ -244,7 +188,7 @@ const Evaluations = () => {
             placeholder="Nombre de la Evaluación"
             value={newEvaluation.title}
             onChange={(e) => setNewEvaluation({ ...newEvaluation, title: e.target.value })}
-            className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+            className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-black-800 text-gray-900 dark:text-black-200" 
           />
 
           <div className="flex items-center mt-4">
@@ -265,7 +209,7 @@ const Evaluations = () => {
             <label className="font-semibold mb-2 text-gray-900 dark:text-gray-300">Fecha de vencimiento</label>
             <input
               type="date"
-              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-black-800 text-gray-900 dark:text-black-200" 
               value={newEvaluation.dueDate}
               onChange={(e) => setNewEvaluation({ ...newEvaluation, dueDate: e.target.value })}
               required
@@ -275,8 +219,8 @@ const Evaluations = () => {
           <div className="question-creation space-y-4">
             <select
               value={newQuestion.type}
-              onChange={(e) => setNewQuestion({ ...newQuestion, type: e.target.value })}
-              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+              onChange={(e) => setNewQuestion({ ...newQuestion, type: e.target.value as 'scale' | 'multiple-choice' | 'text' })}
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="text">Texto</option>
               <option value="multiple-choice">Opción Múltiple</option>
@@ -287,7 +231,7 @@ const Evaluations = () => {
               placeholder="Pregunta"
               value={newQuestion.label}
               onChange={(e) => setNewQuestion({ ...newQuestion, label: e.target.value })}
-              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-black-800 text-gray-900 dark:text-black-200" 
             />
 
             {newQuestion.type === 'multiple-choice' && (
