@@ -3,7 +3,6 @@ import EvaluationForm from '../components/EvaluationForm';
 import { fetchEvaluations } from '../services/evaluationService';
 import { fetchAnswers, saveAnswers } from '../services/answerService';
 import { MemoryRouter } from 'react-router-dom';
-import React from 'react';
 
 // Mock de las funciones de servicio
 jest.mock('../services/evaluationService');

@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; 
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import PendingEvaluations from './PendingEvaluations';
 import CalendarComponent from './CalendarComponent';
