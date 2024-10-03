@@ -6,12 +6,13 @@ Este proyecto fue creado como parte de la prueba técnica para **Nolatech**.
 
 Para instalar las dependencias, ejecuta el siguiente comando:
 
+`npm install`
 
 ## Ejecución
 
-Para ejecutar la aplicación, utiliza:
+Para ejecutar la aplicación (modo desarrollo), utiliza:
 
-`npm start`
+`npm run dev`
 
 
 ## Pruebas
