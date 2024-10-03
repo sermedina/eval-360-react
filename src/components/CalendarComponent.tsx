@@ -5,8 +5,6 @@ import 'react-calendar/dist/Calendar.css';
 import { Evaluation } from '../types';
 import  { fetchEvaluations } from '../services/evaluationService';
 
-Modal.setAppElement('#root'); // O el ID de tu App root
-
 const CalendarComponent: React.FC = () => {
     const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -15,6 +13,7 @@ const CalendarComponent: React.FC = () => {
 
     // Fetch evaluations from jsonbin.io
     useEffect(() => {
+        Modal.setAppElement('#root');
         fetchEvaluations()
         .then(setEvaluations)
         .catch(console.error);

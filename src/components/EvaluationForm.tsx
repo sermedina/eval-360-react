@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React,{ useState, useEffect } from 'react';
 import { Button, Card, TextInput, Title, Text } from '@tremor/react';
 import { Evaluation, Response } from '../types.ts';
 import { fetchAnswers, saveAnswers } from '../services/answerService.ts';
@@ -15,7 +15,7 @@ const EvaluationForm = () => {
   useEffect(() => {
     fetchEvaluations()
       .then((evaluationsResponse) => {
-        const currentEval = evaluationsResponse.record.find((evaluation: Evaluation) => evaluation.isCurrent);
+        const currentEval = evaluationsResponse.find((evaluation: Evaluation) => evaluation.isCurrent);
         setEvaluation(currentEval || null);
       })
       .catch((error) => console.error('Error fetching evaluations:', error))

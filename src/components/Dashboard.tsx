@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import PendingEvaluations from './PendingEvaluations';
 import CalendarComponent from './CalendarComponent';
@@ -105,7 +105,7 @@ const Dashboard = () => {
             </div>
 
             {/* Calendario */}
-            <div className="bottom-4 left-8 w-1/4">
+            <div data-testid="calendar-component" className="bottom-4 left-8 w-1/4">
                 <CalendarComponent />
             </div>
 

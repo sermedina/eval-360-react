@@ -69,3 +69,8 @@
     color: #666; /* Color del texto */
     margin-top: 10px; /* Margen superior */
 }
+
+.chart-container {
+    width: 100%; /* o un tamaño fijo como 500px */
+    height: 400px; /* o cualquier altura que necesites */
+  }
