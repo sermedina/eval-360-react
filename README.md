@@ -1,6 +1,15 @@
-# Prueba Técnica para Nolatech
+# EVAL360: Administrador de evaluaciones de 360 grados
 
-Este proyecto fue creado como parte de la prueba técnica para **Nolatech**.
+Este proyecto es un administrador de evaluaciones hechas por los empleados de una determinada empresa. Cada empleado autenticado responde a una serie de preguntas
+y en base a los resultados se muestra una serie de métricas en el dashboard, que refleja una tendencia general de ciertas aptitudes. A nivel de flujos la aplicación consta de lo siguiente:
+
+-Login
+-Dashboard
+-Perfil
+-Evaluación
+-Creación de empleados/usuarios (rol administrador)
+-Creación de evaluaciones (rol administrador)
+
 
 ## Instalación
 
@@ -24,7 +33,7 @@ Para ejecutar las pruebas unitarias e integrales:
 
 ## Despliegue
 
-La aplicación está desplegada en: [prueba-nolatech-sermedina.netlify.app](https://prueba-nolatech-sermedina.netlify.app/)
+La aplicación está desplegada en: [eval360-sermedina.netlify.app](https://eval360-sermedina.netlify.app/)
 
 ### Credenciales para pruebas:
 
@@ -57,6 +66,9 @@ Este proyecto es una aplicación React que permite a un **administrador** gestio
   
 - **Calendario**:  
   Las fechas límite de las evaluaciones se muestran en rojo dentro del calendario.
+
+  - **Modo oscuro**:  
+  Dentro del menú de perfil, se puede cambiar toda la aplicación a modo oscuro.
 
 ### Decisiones de diseño:
 

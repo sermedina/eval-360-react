@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <aside className="w-64 bg-blue-700 text-white h-screen p-4 shadow-lg dark:bg-gray-800 dark:text-gray-200">
-      <h1 className="text-2xl font-bold mb-6">Prueba Técnica</h1>
+      <h1 className="text-2xl font-bold mb-6">EVAL360</h1>
       <nav>
         <ul className="space-y-4">
           <li>

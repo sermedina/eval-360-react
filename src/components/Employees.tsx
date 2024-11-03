@@ -1,60 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Card, Button, Table, TableHead, TableBody, TableRow, TableCell, TextInput, Text } from '@tremor/react';
 import { Employee } from '../types.ts';
-import  { fetchEmployees, saveEmployee, deleteEmployee } from '../services/employeeService.ts';
-
-
+import { useEmployees } from '../hooks/useEmployees.tsx';
 
 const Employees: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const { employees, error, addEmployee, removeEmployee, setError} = useEmployees();
   const [showForm, setShowForm] = useState(false);
   const [newEmployee, setNewEmployee] = useState<Employee>({ id: 0, name: '', email: '', position: '', username: '', password: '', role: 'employee' });
-  const [error, setError] = useState('');
 
 
-  useEffect(() => {
-    fetchEmployees()
-    .then(setEmployees)
-    .catch(console.error);
-  }, []);
-
-  const handleDeleteEmployee = async (id: number) => {
-    try {
-      const updatedEmployees = await deleteEmployee(id, employees);
-      if (updatedEmployees) { 
-        setEmployees(updatedEmployees);
-      } else {
-        setError('Error al eliminar el empleado');
-      }
-    } catch (error) {
-      console.error(error);
-      setError('Error al eliminar el empleado');
-    }
-  };
-
-  const handleCreateEmployee = async () => {
-    if (newEmployee && newEmployee.name && newEmployee.email && newEmployee.position) {
-      try {
-        const updatedEmployees = await saveEmployee(employees, newEmployee);
-        setEmployees(updatedEmployees);
-        setShowForm(false);
-        setNewEmployee({
-          id: 0,
-          name: '',
-          email: '',
-          position: '',
-          username: '',
-          password: '',
-          role: 'employee',
-        });
-        setError('');
-      } catch {
-        setError('Error al guardar el empleado');
-      }
-    } else {
-      setError('Todos los campos son obligatorios');
-    }
-  };
 
   const isEmailValid = (email: string) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,6 +24,24 @@ const Employees: React.FC = () => {
       newEmployee.password &&
       isEmailValid(newEmployee.email)
     );
+  };
+
+  const handleCreateEmployee = () => {
+    if (isFormValid()) {
+      addEmployee(newEmployee);
+      setShowForm(false);
+      setNewEmployee({
+        id: 0,
+        name: '',
+        email: '',
+        position: '',
+        username: '',
+        password: '',
+        role: 'employee',
+      });
+    } else {
+      setError('Todos los campos son obligatorios');
+    }
   };
 
 
@@ -192,7 +164,7 @@ const Employees: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {employees.map((employee) => (
+            {employees.map((employee:Employee) => (
               <TableRow key={employee.id} className="border-t border-gray-200 dark:border-gray-600">
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.name}</TableCell>
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.username}</TableCell>
@@ -200,7 +172,7 @@ const Employees: React.FC = () => {
                 <TableCell className="px-4 py-2 text-gray-800 dark:text-gray-200">{employee.position}</TableCell>
                 <TableCell className="px-4 py-2">
                   <Button
-                    onClick={() => handleDeleteEmployee(employee.id)}
+                    onClick={() => removeEmployee(employee.id)}
                     className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg"
                   >
                     Borrar

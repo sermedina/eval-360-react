@@ -3,14 +3,8 @@ import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Responsive
 import PendingEvaluations from './PendingEvaluations';
 import CalendarComponent from './CalendarComponent';
 import  { fetchAnswers } from '../services/answerService';
+import { EvaluationResponse } from '../types';
 
-interface EvaluationResponse {
-    author: string;
-    evaluationName: string;
-    answers: {
-        [key: string]: string | number;
-    };
-}
 
 const Dashboard = () => {
     const [data, setData] = useState<EvaluationResponse[]>([]);
