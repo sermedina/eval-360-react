@@ -4,11 +4,17 @@ Este proyecto es un administrador de evaluaciones hechas por los empleados de un
 y en base a los resultados se muestra una serie de métricas en el dashboard, que refleja una tendencia general de ciertas aptitudes. A nivel de flujos la aplicación consta de lo siguiente:
 
 -Login
+
 -Dashboard
+
 -Perfil
+
 -Evaluación
+
 -Creación de empleados/usuarios (rol administrador)
+
 -Creación de evaluaciones (rol administrador)
+
 
 
 ## Instalación
